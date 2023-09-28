@@ -1,25 +1,50 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import SignUp from "./views/SignUpPage";
+import ItemList from "./views/ItemList";
+import Login from "./views/LoginPage";
+import Container from "react-bootstrap/Container";
+import ProtectedRoutes from "./components/ProtectedRoutes";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Navbar />
+      <Container fluid className="p-4">
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* Protected routes */}
+          <Route
+            path="/items"
+            element={
+              <ProtectedRoutes>
+                <ItemList />
+              </ProtectedRoutes>
+            }
+          />
+          <Route
+            path="/item/:id"
+            element={
+              <ProtectedRoutes>
+                <ItemList />
+              </ProtectedRoutes>
+            }
+          />
+          <Route
+            path="/new-item"
+            element={
+              <ProtectedRoutes>
+                <ItemList />
+              </ProtectedRoutes>
+            }
+          />
+        </Routes>
+      </Container>
+    </Router>
   );
 }
 
