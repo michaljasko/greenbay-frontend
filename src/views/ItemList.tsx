@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getItems } from "../redux/slices/itemSlice";
 import { RootState, AppDispatch } from "../redux/store";
 import settings from "../settings";
+import { useNavigate } from "react-router-dom";
 
 interface Item {
   id: number;
@@ -17,6 +18,7 @@ interface Item {
 
 export const ItemList: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   const items = useSelector((state: RootState) => state.items.items);
 
@@ -49,7 +51,7 @@ export const ItemList: React.FC = () => {
       </Col>
       {currentItems.map((item: Item, index: number) => (
         <Col md={6} lg={4} key={index} className="mt-4">
-          <Card className="h-100">
+          <Card className="h-100" onClick={() => navigate(`/item/${item.id}`)}>
             <Card.Img
               variant="top"
               src={getImageUrl(item)}

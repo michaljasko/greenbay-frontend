@@ -19,12 +19,14 @@ interface NewItem {
 
 interface ItemState {
   items: Item[];
+  itemDetail: Item | null;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
 
 const initialState: ItemState = {
   items: [],
+  itemDetail: null,
   status: "idle",
   error: null,
 };
@@ -38,6 +40,16 @@ export const getItems = createAsyncThunk("items/getItems", async () => {
   const response = await fetchItems();
   return response;
 });
+
+export const getItemById = createAsyncThunk(
+  "items/getItemById",
+  async (id: string) => {
+    const response = await axiosInstance.get(`/api/item/${id}`, {
+      headers: { numberOfElements: 1 },
+    });
+    return response.data as Item;
+  }
+);
 
 export const addItem = createAsyncThunk(
   "items/addItem",
@@ -63,6 +75,11 @@ export const addItem = createAsyncThunk(
   }
 );
 
+export const buyItem = createAsyncThunk("items/buyItem", async (id: string) => {
+  const response = await axiosInstance.put(`/api/item/${id}`);
+  return response;
+});
+
 export const itemSlice = createSlice({
   name: "items",
   initialState,
@@ -80,6 +97,17 @@ export const itemSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message || null;
       })
+      .addCase(getItemById.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getItemById.fulfilled, (state, action: PayloadAction<Item>) => {
+        state.itemDetail = action.payload;
+        state.status = "succeeded";
+      })
+      .addCase(getItemById.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message as string;
+      })
       .addCase(addItem.pending, (state) => {
         state.status = "loading";
       })
@@ -88,6 +116,16 @@ export const itemSlice = createSlice({
         state.items.push(action.payload);
       })
       .addCase(addItem.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message || null;
+      })
+      .addCase(buyItem.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(buyItem.fulfilled, (state) => {
+        state.status = "succeeded";
+      })
+      .addCase(buyItem.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message || null;
       });

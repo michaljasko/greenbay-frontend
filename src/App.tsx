@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import SignUp from "./views/SignUpPage";
 import ItemList from "./views/ItemList";
+import ItemDetail from "./views/ItemDetail";
+import AddItem from "./views/AddItem";
 import Login from "./views/LoginPage";
 import Container from "react-bootstrap/Container";
 import ProtectedRoutes from "./components/ProtectedRoutes";
@@ -27,10 +29,10 @@ function App() {
             }
           />
           <Route
-            path="/item/:id"
+            path="/item/:itemId"
             element={
               <ProtectedRoutes>
-                <ItemList />
+                <ItemDetail />
               </ProtectedRoutes>
             }
           />
@@ -38,7 +40,7 @@ function App() {
             path="/new-item"
             element={
               <ProtectedRoutes>
-                <ItemList />
+                <AddItem />
               </ProtectedRoutes>
             }
           />
