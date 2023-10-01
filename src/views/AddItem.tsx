@@ -35,9 +35,19 @@ export const AddItem: React.FC = () => {
       newErrors = { ...newErrors, name: "This field cannot be empty!" };
     }
 
+    if (!formData.description.trim()) {
+      isValid = false;
+      newErrors = { ...newErrors, description: "This field cannot be empty!" };
+    }
+
     if (formData.price <= 0) {
       isValid = false;
       newErrors = { ...newErrors, price: "Price must be more than zero!" };
+    }
+
+    if (formData.price % 1 !== 0) {
+      isValid = false;
+      newErrors = { ...newErrors, price: "Price must be a whole number!" };
     }
 
     setErrors(newErrors);
@@ -72,7 +82,7 @@ export const AddItem: React.FC = () => {
       return newErrors;
     });
 
-    if (name === "name") {
+    if (name === "name" || name === "description") {
       if (value.trim() === "") {
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -84,6 +94,11 @@ export const AddItem: React.FC = () => {
         setErrors((prevErrors) => ({
           ...prevErrors,
           [name]: "Price must be more than zero!",
+        }));
+      } else if (Number(value) % 1 !== 0) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Price must be a whole number",
         }));
       }
     }
@@ -118,6 +133,9 @@ export const AddItem: React.FC = () => {
                 value={formData.description}
                 onChange={handleChange}
               />
+              {errors.description && (
+                <div className="invalid-feedback d-block">{errors.description}</div>
+              )}
             </Form.Group>
 
             <Form.Group controlId="formPrice" className="mt-4">

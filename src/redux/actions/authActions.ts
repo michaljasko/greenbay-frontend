@@ -24,8 +24,10 @@ export const performLogin = (username: string, password: string) => {
         const jwtresponse = response.data;
         const token = jwtresponse.token;
         const username = jwtresponse.username;
+        const money = jwtresponse.money;
         localStorage.setItem("token", token);
         localStorage.setItem("username", username);
+        localStorage.setItem("money", money);
         axiosInstance.defaults.headers.common[
           "Authorization"
         ] = `Bearer ${token}`;

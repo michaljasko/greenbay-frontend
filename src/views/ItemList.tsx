@@ -51,7 +51,7 @@ export const ItemList: React.FC = () => {
       </Col>
       {currentItems.map((item: Item, index: number) => (
         <Col md={6} lg={4} key={index} className="mt-4">
-          <Card className="h-100" onClick={() => navigate(`/item/${item.id}`)}>
+          <Card className="h-100" style={{cursor:'pointer'}} onClick={() => navigate(`/item/${item.id}`)}>
             <Card.Img
               variant="top"
               src={getImageUrl(item)}
@@ -60,11 +60,8 @@ export const ItemList: React.FC = () => {
             />
             <Card.Body>
               <Card.Title>{item.name}</Card.Title>
-              <Card.Text style={{ height: "80px", overflow: "auto" }}>
-                {item.description}
-              </Card.Text>
               <Card.Text>
-                Price: {item.price} $
+                {item.price} $
               </Card.Text>
             </Card.Body>
           </Card>

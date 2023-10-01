@@ -75,10 +75,13 @@ export const addItem = createAsyncThunk(
   }
 );
 
-export const buyItem = createAsyncThunk("items/buyItem", async (id: string) => {
-  const response = await axiosInstance.put(`/api/item/${id}`);
-  return response;
-});
+export const buyItem = createAsyncThunk(
+  "items/buyItem",
+  async (data: { id: string; price: number }) => {
+    const response = await axiosInstance.put(`/api/item/${data.id}`);
+    return { ...response.data, price: data.price };
+  }
+);
 
 export const itemSlice = createSlice({
   name: "items",
@@ -91,7 +94,9 @@ export const itemSlice = createSlice({
       })
       .addCase(getItems.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.items = action.payload;
+        state.items = action.payload.filter((item: Item) => {
+          return !item.buyer;
+        });
       })
       .addCase(getItems.rejected, (state, action) => {
         state.status = "failed";
@@ -122,9 +127,15 @@ export const itemSlice = createSlice({
       .addCase(buyItem.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(buyItem.fulfilled, (state) => {
-        state.status = "succeeded";
-      })
+      .addCase(
+        buyItem.fulfilled,
+        (state, action: PayloadAction<{ price: number }>) => {
+          state.status = "succeeded";
+          const money = parseInt(localStorage.getItem("money") || "0");
+          const updatedMoney = money - action.payload.price;
+          localStorage.setItem("money", updatedMoney.toString());
+        }
+      )
       .addCase(buyItem.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message || null;

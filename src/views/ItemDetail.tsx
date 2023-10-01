@@ -23,6 +23,7 @@ const ItemDetail: React.FC = () => {
 	const [item, setItem] = useState<Item>();
 
   const username = localStorage.getItem("username");
+  const money = parseInt(localStorage.getItem("money") || "0");
 
 	useEffect(() => {
 		if (itemId && !item) {
@@ -36,8 +37,8 @@ const ItemDetail: React.FC = () => {
 		return <div>Loading...</div>;
 	}
 
-  const handleBuyItem = (id: string): void => {
-		dispatch(buyItem(id)).then((_response) => {
+  const handleBuyItem = (id: string, price:number): void => {
+		dispatch(buyItem({id: id, price: price})).then((_response) => {
       if (username) {
         const updatedItem = { ...item, buyer: username };
         setItem(updatedItem);
@@ -78,13 +79,14 @@ const ItemDetail: React.FC = () => {
 								</Card.Text>
 								<Card.Text>Seller: {item.seller}</Card.Text>
 								<Card.Text>Buyer: {item.buyer ? item.buyer : "-"}</Card.Text>
-								<Card.Text>{item.price} $</Card.Text>
+								<Card.Text>Price: {item.price} $</Card.Text>
+								<Card.Text>Available money: {money} $</Card.Text>
 								<div className="mt-auto ms-auto">
-									{!item.buyer && item.seller !== username && (
+									{!item.buyer && item.seller !== username && item.price <= money && (
 										<button
 											type="button"
 											className="btn btn-warning me-1"
-											onClick={() => handleBuyItem(item.id.toString())}
+											onClick={() => handleBuyItem(item.id.toString(), item.price)}
 										>
 											Buy item!
 										</button>
@@ -96,6 +98,15 @@ const ItemDetail: React.FC = () => {
 											disabled
 										>
 											Already sold!
+										</button>
+									)}
+									{!item.buyer && item.seller !== username && item.price > money && (
+										<button
+											type="button"
+											className="btn btn-danger me-1"
+											disabled
+										>
+											Not enough money!
 										</button>
 									)}
 								</div>
