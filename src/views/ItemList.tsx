@@ -3,7 +3,6 @@ import { Row, Col, Card, Pagination } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { getItems } from "../redux/slices/itemSlice";
 import { RootState, AppDispatch } from "../redux/store";
-import settings from "../settings";
 import { useNavigate } from "react-router-dom";
 
 interface Item {
@@ -21,6 +20,8 @@ export const ItemList: React.FC = () => {
   const navigate = useNavigate();
 
   const items = useSelector((state: RootState) => state.items.items);
+  const money = parseInt(localStorage.getItem("money") || "0");
+  const username = localStorage.getItem("username");
 
   useEffect(() => {
     dispatch(getItems());
@@ -39,7 +40,7 @@ export const ItemList: React.FC = () => {
 
   const getImageUrl = (item: Item): string => {
     if (item.photo) {
-      return settings.baseApiUrl + item.photo;
+      return item.photo;
     }
     return "https://via.placeholder.com/800";
   };
@@ -48,6 +49,7 @@ export const ItemList: React.FC = () => {
     <Row className="p-3">
       <Col xs={12} className="mt-5">
         <h1 className="text-center">Items for sale</h1>
+        <p className="text-center">Welcome {username}! Your available money: {money} $</p>
       </Col>
       {currentItems.map((item: Item, index: number) => (
         <Col md={6} lg={4} key={index} className="mt-4">

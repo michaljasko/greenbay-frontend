@@ -14,7 +14,7 @@ interface NewItem {
   name: string;
   description: string;
   price: number;
-  photo: File | null;
+  photo: string | null;
 }
 
 interface ItemState {
@@ -55,19 +55,7 @@ export const addItem = createAsyncThunk(
   "items/addItem",
   async (item: NewItem, thunkAPI) => {
     try {
-      const formData = new FormData();
-      formData.append("name", item.name);
-      formData.append("description", item.description);
-      formData.append("price", item.price.toString());
-      if (item.photo) {
-        formData.append("photo", item.photo);
-      }
-
-      const response = await axiosInstance.post(`/api/item/`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axiosInstance.post(`/api/item/`, item);
       return response.data as Item;
     } catch (error: any) {
       return thunkAPI.rejectWithValue({ error: error.message });

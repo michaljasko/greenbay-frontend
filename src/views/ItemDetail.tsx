@@ -4,7 +4,6 @@ import { AppDispatch } from "../redux/store";
 import { getItemById, buyItem } from "../redux/slices/itemSlice";
 import { useParams } from "react-router-dom";
 import { Card } from "react-bootstrap";
-import settings from "../settings";
 
 interface Item {
 	id: number;
@@ -48,7 +47,7 @@ const ItemDetail: React.FC = () => {
 
 	const getImageUrl = (item: Item): string => {
 		if (item.photo) {
-			return settings.baseApiUrl + item.photo;
+			return item.photo;
 		}
 		return "https://via.placeholder.com/800";
 	};

@@ -13,7 +13,7 @@ export const AddItem: React.FC = () => {
     name: string;
     description: string;
     price: number;
-    photo: File | null;
+    photo: string | null;
   }>({
     name: "",
     description: "",
@@ -50,6 +50,11 @@ export const AddItem: React.FC = () => {
       newErrors = { ...newErrors, price: "Price must be a whole number!" };
     }
 
+    if (formData.photo && !isValidUrl(formData.photo.trim())) {
+      isValid = false;
+      newErrors = { ...newErrors, photo: "This value is not a valid URL!" };
+    }
+
     setErrors(newErrors);
 
     if (isValid) {
@@ -61,19 +66,9 @@ export const AddItem: React.FC = () => {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-
-    // Handle file input
-    if (name === "photo") {
-      const input = e.target as HTMLInputElement;
-      const file = input.files?.[0] ?? null;
-      setFormData((prevData) => ({ ...prevData, [name]: file }));
-      return;
-    }
 
     // Clear any existing error for the field
     setErrors((prevErrors) => {
@@ -101,75 +96,87 @@ export const AddItem: React.FC = () => {
           [name]: "Price must be a whole number",
         }));
       }
+    } else if (name === "photo") {
+      if (!isValidUrl(value.trim())) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "This value is not a valid URL!",
+        }));
+      }
     }
 
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-    return (
-      <Row className="p-3">
-        <h1 className="text-center my-5">Add your item for sale</h1>
-        <Col md={{ span: 8, offset: 2 }} xl={{ span: 6, offset: 3 }}>
-          <Form onSubmit={handleSubmit} encType="multipart/form-data">
-            <Form.Group controlId="formMealName">
-              <Form.Label>Item name:</Form.Label>
-              <Form.Control
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-              />
-              {errors.name && (
-                <div className="invalid-feedback d-block">{errors.name}</div>
-              )}
-            </Form.Group>
+  const isValidUrl = (string: string): boolean => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
 
-            <Form.Group controlId="formDescription" className="mt-4">
-              <Form.Label>Description:</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-              />
-              {errors.description && (
-                <div className="invalid-feedback d-block">{errors.description}</div>
-              )}
-            </Form.Group>
-
-            <Form.Group controlId="formPrice" className="mt-4">
-              <Form.Label>Price:</Form.Label>
-              <Form.Control
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-              />
-              {errors.price && (
-                <div className="invalid-feedback d-block">{errors.price}</div>
-              )}
-            </Form.Group>
-
-            <Form.Group controlId="formPrice" className="mt-4">
-              <Form.Label>Photo:</Form.Label>
-              <Form.Control
-                type="file"
-                name="photo"
-                onChange={handleChange}
-              />
-              {errors.photo && (
-                <div className="invalid-feedback d-block">{errors.photo}</div>
-              )}
-            </Form.Group>
-
-            <Button variant="primary" type="submit" className="mt-5 w-100">
-              Submit
-            </Button>
-          </Form>
-        </Col>
-      </Row>
-    );
+  return (
+    <Row className="p-3">
+      <h1 className="text-center my-5">Add your item for sale</h1>
+      <Col md={{ span: 8, offset: 2 }} xl={{ span: 6, offset: 3 }}>
+        <Form onSubmit={handleSubmit} encType="multipart/form-data">
+          <Form.Group controlId="formMealName">
+            <Form.Label>Item name*:</Form.Label>
+            <Form.Control
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+            />
+            {errors.name && (
+              <div className="invalid-feedback d-block">{errors.name}</div>
+            )}
+          </Form.Group>
+          <Form.Group controlId="formDescription" className="mt-4">
+            <Form.Label>Description*:</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+            />
+            {errors.description && (
+              <div className="invalid-feedback d-block">{errors.description}</div>
+            )}
+          </Form.Group>
+          <Form.Group controlId="formPrice" className="mt-4">
+            <Form.Label>Price*:</Form.Label>
+            <Form.Control
+              type="number"
+              name="price"
+              value={formData.price}
+              onChange={handleChange}
+            />
+            {errors.price && (
+              <div className="invalid-feedback d-block">{errors.price}</div>
+            )}
+          </Form.Group>
+          <Form.Group controlId="formPrice" className="mt-4">
+            <Form.Label>Photo URL:</Form.Label>
+            <Form.Control
+              type="text"
+              name="photo"
+              onChange={handleChange}
+            />
+            {errors.photo && (
+              <div className="invalid-feedback d-block">{errors.photo}</div>
+            )}
+          </Form.Group>
+          <Button variant="primary" type="submit" className="mt-5 w-100">
+            Submit
+          </Button>
+        </Form>
+      </Col>
+    </Row>
+  );
 };
 
 export default AddItem;
